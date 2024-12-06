@@ -2,11 +2,12 @@ package com.github.iselg1.snake
 
 /**
  * A main control data class used to save the positions of everything in the game
- * @param snakeParts A list of snake objects
+ * @param snake The object controlling the active snake parts
  * @param bricks The positions of every brick in the game
- * @param direction The direction that the user wants to move to
+ * @param apple The object used to add length to snake's body and score
+ * @param score The value of points gained by eating apples during the game
  */
-data class Game(val snakeParts: ArrayList<Snake>, val bricks: ArrayList<Position>, val direction: Direction)
+data class Game(val snake: Snake, val bricks: ArrayList<Position>, val apple: Position?, val score: Int)
 
 /**
  * Generates a new brick with a random position

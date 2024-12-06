@@ -44,20 +44,10 @@ fun SnakeSprite.getString(): String {
 }
 
 /**
- * This class is responsible for handling any snake-related operations
- * @param type The snake variant, or the body part it represents
- * @param position The snake position with coordinates (x,y)
- * @param direction The direction the part is facing.
+ * This class is responsible for handling any snake-related operations, controlling a cluster of snake parts
+ * @param body The cluster of snake parts being controlled
+ * @param direction The direction the snake's head is currently going in
+ * @param stopped Stop the movement of snake's parts excluding the head until toGrow reaches 0
+ * @param toGrow Number of elements that the snake needs to add to body
  */
-data class Snake(val type: SnakeType, val position: Position, val direction: Direction)
-
-/**
- * Puts together the name of the sprite based on the snake information and
- * returns the SnakeSprite enum based on that information.
- *
- * @return A SnakeSprite object based on the current snake information
- * @see com.github.iselg1.snake.SnakeSprite
- */
-fun Snake.getSprite(): SnakeSprite {
-    return SnakeSprite.valueOf(this.type.name + "_" + this.direction.name)
-}
+data class Snake(val body: List<SnakePart>, val direction: Direction, val stopped: Boolean, val toGrow: Int)
