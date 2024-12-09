@@ -1,4 +1,4 @@
-package com.github.iselg1.snake
+package com.github.iselg1.snake_game
 
 import pt.isel.canvas.Canvas
 

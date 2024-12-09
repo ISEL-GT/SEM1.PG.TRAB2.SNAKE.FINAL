@@ -1,7 +1,6 @@
-package com.github.iselg1.snake
+package com.github.iselg1.snake_game
 
 import pt.isel.canvas.*
-import java.util.stream.IntStream.range
 
 // The global tick speed. The higher this is, the faster everything goes.
 const val GLOBAL_TICK_SPEED = 1

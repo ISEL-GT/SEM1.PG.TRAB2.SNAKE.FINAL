@@ -1,4 +1,4 @@
-package com.github.iselg1.snake
+package com.github.iselg1.snake_game
 
 /**
  * This enum holds the different types of snake sprite variations that exist

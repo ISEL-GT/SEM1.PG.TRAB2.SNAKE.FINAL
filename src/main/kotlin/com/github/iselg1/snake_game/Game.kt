@@ -1,4 +1,4 @@
-package com.github.iselg1.snake
+package com.github.iselg1.snake_game
 
 /**
  * A main control data class used to save the positions of everything in the game
@@ -18,7 +18,7 @@ fun Game.generateNewBrick(): Game {
 
     // Generates a random position
     val brickPosition = randomPosition()
-    val snakePositions = this.snakeParts.map { snake -> snake.position }
+    val snakePositions = this.snake.body.map { part -> part.position }
 
     // Recursively generates a brick position that hasn't been used yet
     if (brickPosition.exists(this.bricks) || brickPosition.exists(snakePositions))
@@ -26,7 +26,7 @@ fun Game.generateNewBrick(): Game {
 
     // Returns the new brick set made from this new brick position
     this.bricks.add(brickPosition)
-    return Game(this.snakeParts, this.bricks, this.direction)
+    return Game(this.snake, this.bricks, this.apple, this.score)
 }
 
 /**

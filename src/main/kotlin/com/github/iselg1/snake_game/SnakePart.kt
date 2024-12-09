@@ -1,4 +1,4 @@
-package com.github.iselg1.snake
+package com.github.iselg1.snake_game
 
 /**
  *  A single snake part, representing both a type and its position
