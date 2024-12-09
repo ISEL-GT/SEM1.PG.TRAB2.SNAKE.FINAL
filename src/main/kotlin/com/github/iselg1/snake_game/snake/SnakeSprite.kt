@@ -1,13 +1,7 @@
-package com.github.iselg1.snake_game
+package com.github.iselg1.snake_game.snake
 
-/**
- * This enum holds the different types of snake sprite variations that exist
- */
-enum class SnakeType {
-    HEAD,
-    TAIL,
-    TORSO
-}
+import com.github.iselg1.snake_game.common.SNAKE_SIZE
+import com.github.iselg1.snake_game.common.SNAKE_SPRITE
 
 /**
  * This enum holds the different sprites that exist in the snake.png file
@@ -42,12 +36,3 @@ enum class SnakeSprite(val x: Int, val y: Int) {
 fun SnakeSprite.getString(): String {
     return "$SNAKE_SPRITE|${this.x},${this.y},$SNAKE_SIZE,$SNAKE_SIZE"
 }
-
-/**
- * This class is responsible for handling any snake-related operations, controlling a cluster of snake parts
- * @param body The cluster of snake parts being controlled
- * @param direction The direction the snake's head is currently going in
- * @param stopped Stop the movement of snake's parts excluding the head until toGrow reaches 0
- * @param toGrow Number of elements that the snake needs to add to body
- */
-data class Snake(val body: List<SnakePart>, val direction: Direction, val stopped: Boolean, val toGrow: Int)

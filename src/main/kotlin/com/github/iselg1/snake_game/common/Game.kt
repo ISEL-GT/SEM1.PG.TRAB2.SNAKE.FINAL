@@ -1,4 +1,8 @@
-package com.github.iselg1.snake_game
+package com.github.iselg1.snake_game.common
+
+import com.github.iselg1.snake_game.*
+import com.github.iselg1.snake_game.snake.Snake
+import com.github.iselg1.snake_game.snake.SnakeType
 
 /**
  * A main control data class used to save the positions of everything in the game

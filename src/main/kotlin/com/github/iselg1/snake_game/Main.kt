@@ -1,5 +1,8 @@
 package com.github.iselg1.snake_game
 
+import com.github.iselg1.snake_game.common.*
+import com.github.iselg1.snake_game.snake.Snake
+import com.github.iselg1.snake_game.snake.SnakeType
 import pt.isel.canvas.*
 
 // The global tick speed. The higher this is, the faster everything goes.
@@ -105,6 +108,7 @@ fun onSnakeTick() {
     // If the snake is about to "snap its neck" with a bad move, ignore the last input.
     val correctedInput = if (nextHeadPosition.exists(game.bricks)) game.snakeParts.first().direction else directionInput
     game = Game(game.snakeParts, game.bricks, correctedInput)
+
 
     // If the next position contains a brick, stop the snake.
     if (game.bricks.contains(nextHeadPosition)) return

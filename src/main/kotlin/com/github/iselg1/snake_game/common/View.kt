@@ -1,5 +1,8 @@
-package com.github.iselg1.snake_game
+package com.github.iselg1.snake_game.common
 
+import com.github.iselg1.snake_game.SQUARE_DIMENSIONS
+import com.github.iselg1.snake_game.arena
+import com.github.iselg1.snake_game.snake.Snake
 import pt.isel.canvas.Canvas
 
 // The filename constants for the resources (We can't have configuration files yet)

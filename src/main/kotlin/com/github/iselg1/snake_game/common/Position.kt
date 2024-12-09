@@ -1,5 +1,7 @@
-package com.github.iselg1.snake_game
+package com.github.iselg1.snake_game.common
 
+import com.github.iselg1.snake_game.BOARD_HEIGHT
+import com.github.iselg1.snake_game.BOARD_WIDTH
 import kotlin.random.Random
 
 /**

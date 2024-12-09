@@ -1,4 +1,7 @@
-package com.github.iselg1.snake_game
+package com.github.iselg1.snake_game.snake
+
+import com.github.iselg1.snake_game.common.Direction
+import com.github.iselg1.snake_game.common.Position
 
 /**
  *  A single snake part, representing both a type and its position
