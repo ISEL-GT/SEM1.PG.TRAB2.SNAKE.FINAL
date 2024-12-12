@@ -3,6 +3,9 @@ package com.github.iselg1.snake_game.common
 import com.github.iselg1.snake_game.SQUARE_DIMENSIONS
 import com.github.iselg1.snake_game.arena
 import com.github.iselg1.snake_game.snake.Snake
+import com.github.iselg1.snake_game.snake.SnakePart
+import com.github.iselg1.snake_game.snake.getSprite
+import com.github.iselg1.snake_game.snake.getString
 import pt.isel.canvas.Canvas
 
 // The filename constants for the resources (We can't have configuration files yet)
@@ -34,7 +37,7 @@ fun Game.eraseSnake() {
  * @param snakes The list of snakes to draw in the arena
  * @param arena The canvas to draw the snakes in
  */
-fun Game.drawSnake(snakes: ArrayList<Snake>, arena: Canvas) {
+fun Game.drawSnake(snakes: List<SnakePart>, arena: Canvas) {
     this.eraseSnake()
 
     for (snake in snakes) {

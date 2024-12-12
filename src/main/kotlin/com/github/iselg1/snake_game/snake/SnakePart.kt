@@ -7,7 +7,7 @@ import com.github.iselg1.snake_game.common.Position
  *  A single snake part, representing both a type and its position
  *  @param position The snake position with coordinates (x,y)
  */
-data class SnakePart(val type: SnakeType, val position: Position, val direction: Direction)
+data class SnakePart(val type: SnakePartType, val position: Position, val direction: Direction)
 
 /**
  * Puts together the name of the sprite based on the snake information and

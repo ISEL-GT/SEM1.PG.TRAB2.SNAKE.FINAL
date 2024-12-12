@@ -1,8 +1,7 @@
 package com.github.iselg1.snake_game.common
 
 import com.github.iselg1.snake_game.*
-import com.github.iselg1.snake_game.snake.Snake
-import com.github.iselg1.snake_game.snake.SnakeType
+import com.github.iselg1.snake_game.snake.*
 
 /**
  * A main control data class used to save the positions of everything in the game
@@ -11,7 +10,19 @@ import com.github.iselg1.snake_game.snake.SnakeType
  * @param apple The object used to add length to snake's body and score
  * @param score The value of points gained by eating apples during the game
  */
-data class Game(val snake: Snake, val bricks: ArrayList<Position>, val apple: Position?, val score: Int)
+data class Game(val snake: Snake, val bricks: List<Position>, val apple: Position, val score: Int)
+
+/**
+ * @return An empty game object to be used as a dummy
+ */
+fun emptyGame() : Game = Game(Snake(emptyList(), Direction.RIGHT, false, 0), emptyList(), Position(0,0), 0)
+
+/**
+ * Creates a new game instance with a new snake for writing simplicity
+ *
+ * @return A Game instance with a different snake in it
+ */
+fun Game.withSnake(snake: Snake) : Game = Game(snake, this.bricks, this.apple, this.score)
 
 /**
  * Generates a new brick with a random position
@@ -29,18 +40,8 @@ fun Game.generateNewBrick(): Game {
         return this.generateNewBrick()
 
     // Returns the new brick set made from this new brick position
-    this.bricks.add(brickPosition)
-    return Game(this.snake, this.bricks, this.apple, this.score)
-}
-
-/**
- * Updates the internal list of Snake parts
- *
- * @param snakeParts A list of Snake objects to update the snakes list with
- */
-fun Game.updateSnake(snakeParts: List<Snake>) {
-    this.snakeParts.clear()
-    snakeParts.forEach { part -> game.snakeParts.add(part) }
+    val newBricks = this.bricks.plus(brickPosition)
+    return Game(this.snake, newBricks, this.apple, this.score)
 }
 
 /**
@@ -49,30 +50,31 @@ fun Game.updateSnake(snakeParts: List<Snake>) {
  *
  * @param direction The direction to move the head of the snake in
  * @param headPosition The position where the head should be next in
- * @return A list of snake parts containing the snake objects with their new positions
+ *
+ * @return A snake object with its new parts in the calculated positions
  */
-fun Game.calculateSnakeMovement(direction: Direction, headPosition: Position) : List<Snake> {
+fun Game.calculateSnakeMovement(direction: Direction, headPosition: Position) : Snake {
 
     // Creates a base array to return and adds the head at the next position
-    val snakes = ArrayList<Snake>()
-    snakes.add(Snake(SnakeType.HEAD, headPosition, direction))
+    var newSnake = this.snake.clear()
+    newSnake = newSnake.plus(SnakePartType.HEAD, headPosition, direction)
 
     // Iterates through all the snake's parts, applying the direction of the previous part.
     // Ignores the tail, because that's handled differently
-    for ((index, snake) in this.snakeParts.withIndex()) {
+    for ((index, snake) in this.snake.body.withIndex()) {
 
         // Skip the head, that's handled differently, but we need it in the list to get its direction
-        if (snake == this.snakeParts.first()) continue
+        if (snake == this.snake.body.first()) continue
 
         // Handles the tail by setting it as the previous last position with the new orientation
-        if (snake == this.snakeParts.last()) {
-            snakes.add(Snake(snake.type, this.snakeParts.dropLast(1).last().position, snakes.last().direction))
+        if (snake == this.snake.body.last()) {
+            newSnake = newSnake.plus(snake.type, this.snake.body.dropLast(1).last().position, newSnake.body.last().direction)
             continue
         }
 
-        val lastSnake = this.snakeParts[index-1]
-        snakes.add(Snake(snake.type, lastSnake.position, lastSnake.direction))
+        val lastSnake = this.snake.body[index-1]
+        newSnake = newSnake.plus(snake.type, lastSnake.position, lastSnake.direction)
     }
 
-    return snakes
+    return newSnake
 }
