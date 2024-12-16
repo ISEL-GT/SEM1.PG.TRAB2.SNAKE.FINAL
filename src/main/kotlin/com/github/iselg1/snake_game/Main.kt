@@ -16,15 +16,16 @@ const val BOARD_WIDTH = 20
 const val BOARD_HEIGHT = 16
 const val TOTAL_SQUARES = BOARD_HEIGHT * BOARD_WIDTH
 
-// The size in pixels of one of the square's sides
+// The size in pixels of one of the square's sides and the label height
 const val SQUARE_DIMENSIONS = 32
+const val LABEL_HEIGHT = SQUARE_DIMENSIONS * 2
+
+// The size the snake should gain by eating an apple
+const val NUTRITION = 2
 
 // The main arena and game where everything will be drawn on
-val arena = Canvas(BOARD_WIDTH * SQUARE_DIMENSIONS, BOARD_HEIGHT * SQUARE_DIMENSIONS, BLACK)
+val arena = Canvas(BOARD_WIDTH * SQUARE_DIMENSIONS, (BOARD_HEIGHT * SQUARE_DIMENSIONS) + LABEL_HEIGHT, BLACK)
 var game = emptyGame()
-
-// Acts as a queue for inputs, in case the user sends multiple too quickly
-const val MAX_INPUTS = 1
 
 /**
  * Main entrypoint for the program, kick off the main logic flow and spawn the snake
@@ -34,8 +35,11 @@ fun main() {
 
     onStart {
 
-        // Spawns the snake and ticks the bricks once
+        // Spawns the snake and adds the initial bricks and apple, alongside any other resources
         spawnSnake()
+        placeInitialBricks()
+        game.newApple(arena)
+        game.drawLabel()
 
         // Starts the ticking process for both the snake and the brick
         arena.onTimeProgress(SNAKE_TICK_SPEED * (1 / GLOBAL_TICK_SPEED)) { onSnakeTick() }
@@ -47,17 +51,62 @@ fun main() {
 }
 
 /**
- * Spawns in the snake, creating a head-typed snake part and a tail.
+ * Spawns in the snake, creating a head-typed snake part d a tail.
  */
 fun spawnSnake() {
 
     // Create the snake head and add it to the snake parts
     val centerHeight = BOARD_HEIGHT / 2
+    val centerWidth = BOARD_WIDTH / 2
 
-    var newSnake = game.snake.plus(SnakePartType.HEAD, Position(1, centerHeight))
-    newSnake = newSnake.plus(SnakePartType.TAIL, Position(0, centerHeight), game.snake.direction)
+    var newSnake = game.snake.plus(SnakePartType.HEAD, Position(centerWidth, centerHeight))
+    newSnake = newSnake.plus(SnakePartType.TORSO, Position(centerWidth-1, centerHeight), game.snake.direction, true)
+    newSnake = newSnake.plus(SnakePartType.TAIL, Position(centerWidth-2, centerHeight), game.snake.direction, true)
 
     game = game.withSnake(newSnake)
+}
+
+/**
+ * Places the initial bricks within the screen
+ */
+fun placeInitialBricks() {
+
+    val bricks = listOf(
+
+        // The top left corner
+        Position(0,0),
+        Position(0,1),
+        Position(0,2),
+        Position(0,3),
+        Position(1,0),
+        Position(2,0),
+
+        // The top right corner
+        Position(17,0),
+        Position(18,0),
+        Position(19,0),
+        Position(19,1),
+        Position(19,2),
+        Position(19,3),
+
+        // The bottom left corner
+        Position(0,12),
+        Position(0,13),
+        Position(0,14),
+        Position(0,15),
+        Position(1,15),
+        Position(2,15),
+
+        // The bottom right corner
+        Position(17,15),
+        Position(18,15),
+        Position(19,12),
+        Position(19,13),
+        Position(19,14),
+        Position(19,15),
+    )
+
+    game = game.withBricks(bricks)
 }
 
 /**
@@ -67,13 +116,17 @@ fun spawnSnake() {
  */
 fun onKeyPressed(key: KeyEvent) {
 
+    // Only process key events if the queued direction hasn't been processed
+    if (game.queuedDirection != Direction.NONE) return;
+
     // Get the direction associated with the key pressed.
     // If the key isn't mapped to a direction, return.
     val direction = getDirectionFor(key.code) ?: return
 
     // Prevent the snake from moving in opposite directions
     if (game.snake.direction.isOpposite(direction)) return;
-    game = game.withSnake(game.snake.withDirection(direction))
+
+    game = game.withDirectionQueue(direction)
 }
 
 /**
@@ -85,9 +138,11 @@ fun onBrickTick() {
     // Checks if all the squares have been filled, and if so, stops generating them
     if (game.bricks.size == TOTAL_SQUARES - game.snake.body.size) return
 
-    // Generates a new brick and draws it on screen
-    game = game.generateNewBrick()
-    game.drawBricks(arena)
+    // Generates a new brick and draws it on screen, excluding the snake body positions
+    val exclusionList = game.snake.body.map { part -> part.position }
+
+    game = game.withBricks(game.bricks.plus(game.generateNewPosition(exclusionList)))
+    game.drawBricks()
 }
 
 /**
@@ -97,19 +152,26 @@ fun onBrickTick() {
 fun onSnakeTick() {
 
     // Get the queued input, or maintain the current direction if there's none
-    val directionInput = game.snake.direction
-    val nextHeadPosition = game.snake.body.first().position.applyDirection(directionInput)
+    val directionInput = if (game.queuedDirection != Direction.NONE) game.queuedDirection else game.snake.direction
+    val headPosition = game.snake.body.first().position
+    var nextHeadPosition = headPosition.applyDirection(directionInput)
 
     // If the snake is about to "snap its neck" with a bad move, ignore the last input.
-    val correctedInput = if (nextHeadPosition.exists(game.bricks)) game.snake.body.first().direction else directionInput
-    game = game.withSnake(game.snake.withDirection(correctedInput))
-
+    val correctedInput = if (nextHeadPosition.exists(game.bricks) || game.snake.contains(nextHeadPosition)) game.snake.direction else directionInput
+    game = game.withSnake(game.snake.withDirection(correctedInput)).withDirectionQueue(Direction.NONE)
 
     // If the next position contains a brick, stop the snake.
-    if (game.bricks.contains(nextHeadPosition)) return
+    nextHeadPosition = headPosition.applyDirection(correctedInput)
+    if (game.bricks.contains(nextHeadPosition) || game.snake.contains(nextHeadPosition)) return
 
-    // Updates and draws the snake on screen
-    game = game.withSnake(game.calculateSnakeMovement(directionInput, nextHeadPosition))
-    game.drawSnake(game.snake.body, arena)
+    // If the snake has eaten an apple, increment the score, generate a new apple and mark it having eaten
+    if (nextHeadPosition.isEqual(game.apple)) {
+        game = game.incrementScore()
+        game = game.withSnake(game.snake.eat())
+        game.newApple(arena)
+    }
+
+    game = game.withSnake(game.calculateSnakeMovement(correctedInput, nextHeadPosition))
+    game.drawSnake(game.snake.body)
 }
 

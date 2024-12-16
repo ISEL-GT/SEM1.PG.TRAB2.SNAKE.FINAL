@@ -24,7 +24,9 @@ enum class SnakeSprite(val x: Int, val y: Int) {
     TAIL_UP(192, 128),
     TAIL_DOWN(256, 192),
     TAIL_RIGHT(256, 128),
-    TAIL_LEFT(192, 192)
+    TAIL_LEFT(192, 192),
+
+    APPLE(0,192)
 }
 
 /**
