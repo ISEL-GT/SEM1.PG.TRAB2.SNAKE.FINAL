@@ -1,14 +1,17 @@
 package com.github.iselg1.snake_game
 
 import com.github.iselg1.snake_game.common.*
-import com.github.iselg1.snake_game.snake.*
+import com.github.iselg1.snake_game.snake.SnakePartType
+import com.github.iselg1.snake_game.snake.eat
+import com.github.iselg1.snake_game.snake.plus
+import com.github.iselg1.snake_game.snake.withDirection
 import pt.isel.canvas.*
 
 // The global tick speed. The higher this is, the faster everything goes.
 const val GLOBAL_TICK_SPEED = 1
 
 // The different ticking speed for both the snake and brick actions (every x ms)
-const val SNAKE_TICK_SPEED = 250
+const val SNAKE_TICK_SPEED = 150
 const val BRICK_TICK_SPEED = 5 * 1000
 
 // The width of the board measured in grid squares
@@ -21,7 +24,7 @@ const val SQUARE_DIMENSIONS = 32
 const val LABEL_HEIGHT = SQUARE_DIMENSIONS * 2
 
 // The size the snake should gain by eating an apple
-const val NUTRITION = 2
+const val NUTRITION = 5
 
 // The main arena and game where everything will be drawn on
 val arena = Canvas(BOARD_WIDTH * SQUARE_DIMENSIONS, (BOARD_HEIGHT * SQUARE_DIMENSIONS) + LABEL_HEIGHT, BLACK)
@@ -60,10 +63,9 @@ fun spawnSnake() {
     val centerWidth = BOARD_WIDTH / 2
 
     var newSnake = game.snake.plus(SnakePartType.HEAD, Position(centerWidth, centerHeight))
-    newSnake = newSnake.plus(SnakePartType.TORSO, Position(centerWidth-1, centerHeight), game.snake.direction, true)
-    newSnake = newSnake.plus(SnakePartType.TAIL, Position(centerWidth-2, centerHeight), game.snake.direction, true)
+    newSnake = newSnake.plus(SnakePartType.TAIL, Position(centerWidth-1, centerHeight), game.snake.direction, true)
 
-    game = game.withSnake(newSnake)
+    game = game.withSnake(newSnake.eat(3))
 }
 
 /**
@@ -151,20 +153,22 @@ fun onBrickTick() {
  */
 fun onSnakeTick() {
 
+    if (game.isSnakeBlocked()) return;
+
     // Get the queued input, or maintain the current direction if there's none
     val directionInput = if (game.queuedDirection != Direction.NONE) game.queuedDirection else game.snake.direction
     val headPosition = game.snake.body.first().position
-    var nextHeadPosition = headPosition.applyDirection(directionInput)
 
     // If the snake is about to "snap its neck" with a bad move, ignore the last input.
-    val correctedInput = if (nextHeadPosition.exists(game.bricks) || game.snake.contains(nextHeadPosition)) game.snake.direction else directionInput
+    val correctedInput = if (game.isSnakeObstructed(directionInput)) game.snake.direction else directionInput
     game = game.withSnake(game.snake.withDirection(correctedInput)).withDirectionQueue(Direction.NONE)
 
     // If the next position contains a brick, stop the snake.
-    nextHeadPosition = headPosition.applyDirection(correctedInput)
-    if (game.bricks.contains(nextHeadPosition) || game.snake.contains(nextHeadPosition)) return
+    if (game.isSnakeObstructed(correctedInput)) return
 
     // If the snake has eaten an apple, increment the score, generate a new apple and mark it having eaten
+    val nextHeadPosition = headPosition.applyDirection(correctedInput)
+
     if (nextHeadPosition.isEqual(game.apple)) {
         game = game.incrementScore()
         game = game.withSnake(game.snake.eat())

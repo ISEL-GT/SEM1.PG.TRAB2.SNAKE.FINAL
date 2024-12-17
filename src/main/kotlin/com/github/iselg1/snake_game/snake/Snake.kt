@@ -21,14 +21,16 @@ data class Snake(val body: List<SnakePart>, val direction: Direction, val stoppe
 fun Snake.clear() : Snake = Snake(emptyList(), this.direction, false, 0)
 
 /**
- * Sets the snake as "having eaten an apple", so that it grows.
+ * Sets the snake as "having eaten an apple", so that it grows accordingly to the nutrition value
+ * @param nutrition The amount of parts the snake will grow
+ * @return A snake with new growing and stopped values
  */
-fun Snake.eat() : Snake = Snake(this.body, this.direction, true, toGrow + NUTRITION)
+fun Snake.eat(nutrition: Int = NUTRITION) : Snake = Snake(this.body, this.direction, (this.toGrow + nutrition) > 0, toGrow + nutrition)
 
 /**
  * Decrements the growing counter and updates the stopped variable, to know when to allow the snake to move
  */
-fun Snake.digest() : Snake = Snake(this.body, this.direction, this.toGrow > 0, this.toGrow - 1)
+fun Snake.digest() : Snake = Snake(this.body, this.direction, this.toGrow - 1 > 0, this.toGrow - 1)
 
 /**
  * Creates a new snake instance with a new direction for writing simplicity

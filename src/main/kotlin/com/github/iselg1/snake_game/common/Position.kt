@@ -118,20 +118,6 @@ fun Position.applyDirection(direction: Direction, factor: Double = 1.0): Positio
 }
 
 /**
- * Forces the application of a direction without the boundary checks
- * @param direction Vector used to calculate the new position
- * @param factor A constant to multiply the weight of the vector
- * @return A new position with the vector applied
- */
-fun Position.forceApplyDirection(direction: Direction, factor: Double = 1.0): Position {
-
-    val x = this.x + (direction.x * factor).toInt()
-    val y = this.y + (direction.y * factor).toInt()
-
-    return Position(x, y)
-}
-
-/**
  * Generates a new random position between 0 and the constants of the board
  *
  * @return A random coordinate position (x,y)
@@ -142,14 +128,4 @@ fun randomPosition(): Position {
     val y = Random.nextInt(0, BOARD_HEIGHT)
 
     return Position(x, y)
-}
-
-/**
- * Returns the symmetrical number to the one provided
- *
- * @param x An integer to ge the symmetrical for
- * @return The symmetrical of x
- */
-fun symmetric(x: Int): Int {
-    return x * -1
 }

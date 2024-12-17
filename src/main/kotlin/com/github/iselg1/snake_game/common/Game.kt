@@ -119,3 +119,26 @@ fun Game.calculateSnakeMovement(direction: Direction, headPosition: Position) : 
 
     return newSnake
 }
+
+/**
+ * Checks if the snake is obstructed in the given direction
+ *
+ * @param direction The direction in which to check for an obstruction
+ * @return Whether there is an obstruction in the direction specified
+ */
+fun Game.isSnakeObstructed(direction: Direction) : Boolean {
+    val nextHeadPosition = this.snake.body.first().position.applyDirection(direction)
+    return game.bricks.contains(nextHeadPosition) || game.snake.contains(nextHeadPosition)
+}
+
+/**
+ * Checks if the snake is obstructed on all sides
+ * @return Whether the snake can't move to any side
+ */
+fun Game.isSnakeBlocked() : Boolean {
+
+    return this.isSnakeObstructed(Direction.UP)
+            && this.isSnakeObstructed(Direction.DOWN)
+            && this.isSnakeObstructed(Direction.LEFT)
+            && this.isSnakeObstructed(Direction.RIGHT)
+}
