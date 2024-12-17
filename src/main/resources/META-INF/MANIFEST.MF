@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: com.github.iselg1.snake.MainKt
+Main-Class: com.github.iselg1.snake_game.snake.MainKt
 
