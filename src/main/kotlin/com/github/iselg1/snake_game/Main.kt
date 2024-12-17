@@ -49,7 +49,6 @@ fun main() {
         arena.onTimeProgress(BRICK_TICK_SPEED * (1 / GLOBAL_TICK_SPEED)) { onBrickTick() }
         arena.onKeyPressed { key -> onKeyPressed(key) }
     }
-
     onFinish { }
 }
 
@@ -178,4 +177,3 @@ fun onSnakeTick() {
     game = game.withSnake(game.calculateSnakeMovement(correctedInput, nextHeadPosition))
     game.drawSnake(game.snake.body)
 }
-

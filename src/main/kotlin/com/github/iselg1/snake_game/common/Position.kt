@@ -12,68 +12,6 @@ import kotlin.random.Random
 data class Position(val x: Int, val y: Int)
 
 /**
- * This class is responsible for holding the direction vectors to be used by the snake
- * @param x Abscissa of the vector direction
- * @param y Ordinate of the vector direction
- */
-enum class Direction(val x: Int, val y: Int) {
-    UP(0, -1),
-    DOWN(0, 1),
-    LEFT(-1, 0),
-    RIGHT(1, 0),
-    NONE(0, 0)
-}
-
-/**
- * Since there's symmetrical relationship between values in opposite directions, if we
- * multiply them by -1 and land on the other, then they're opposites.
- *
- * @param direction Vector with coordinates (x,y)
- * @return Whether the two directions being compared are opposites or not
- */
-fun Direction.isOpposite(direction: Direction): Boolean {
-
-    val oppositeX = (symmetric(this.x) == direction.x) && this.x != 0
-    val oppositeY = (symmetric(this.y) == direction.y) && this.y != 0
-    return oppositeX || oppositeY
-}
-
-/**
- * Checks for the first entry in the directions that has symmetrical values to the one being checked,
- * meaning it is its opposite.
- * @return Returns the opposite direction to this one
- */
-fun Direction.getOpposite(): Direction {
-    return Direction.entries.first { entry -> (entry.x == symmetric(this.x)) && (entry.y == symmetric(this.y)) }
-}
-
-/**
- * Maps the relevant key codes into directions to be used
- */
-enum class DirectionMappings(val direction: Direction, val keys: Array<Int>) {
-    LEFT_MAP(Direction.LEFT, keys = arrayOf(37, 65)),
-    UP_MAP(Direction.UP, keys = arrayOf(38, 87)),
-    RIGHT_MAP(Direction.RIGHT, keys = arrayOf(39, 68)),
-    DOWN_MAP(Direction.DOWN, keys = arrayOf(40, 83)),
-}
-
-/**
- * Gets the direction associated with the given key
- *
- * @param keyCode The key code to check for
- * @return The direction associated with the key code
- */
-fun getDirectionFor(keyCode: Int): Direction? {
-
-    // Iterate over every mapping and check if our key is within it
-    for (mapping in DirectionMappings.entries) {
-        if (mapping.keys.contains(keyCode)) return mapping.direction
-    }
-
-    return null
-}
-
-/**
  * Checks if the positional values between this and another position are the same
  * @param position Any other position to compare this one to
  *

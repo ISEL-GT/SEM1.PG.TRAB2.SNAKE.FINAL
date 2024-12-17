@@ -65,11 +65,12 @@ fun Game.newApple(arena: Canvas) {
 }
 
 /**
- * Generates a new brick with a random position
+ * Generates a new random position
  *
- * @return A position object with the new brick coordinates
+ * @param exclude A list of positions that cannot be outputted
+ * @return A position object with new coordinates
  */
-fun Game.generateNewBrick(): Game {
+fun Game.generateNewPosition(exclude: List<Position>): Position {
 
     // Generates a random position
     val position = randomPosition()

@@ -39,7 +39,6 @@ enum class SnakeSprite(val x: Int, val y: Int) {
 
     APPLE(0,3)
 }
-
 /**
  * Generates a string to be used while drawing the snake sprite, with the correct square
  * dimensions
